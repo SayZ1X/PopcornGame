@@ -196,7 +196,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
    }
 
    if (moved_column_count == 0)
-      Platform_State = EPS_Missing; // Вся платформа сдвинулась за пределы окна
+      Platform_State = EPS_Missing;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)

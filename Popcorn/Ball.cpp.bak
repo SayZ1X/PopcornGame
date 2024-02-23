@@ -95,7 +95,7 @@ void ABall::Move(ALevel* level, int platform_x_pos, int platform_width)
    Ball_X_Pos = next_x_pos;
    Ball_Y_Pos = next_y_pos;
 
-   Redraw_Ball();
+   Redraw();
 }
 //-------------------------------------------------------------------------------------------------------------------------
 EBall_State ABall::Get_State()
@@ -112,26 +112,29 @@ void ABall::Set_State(EBall_State new_state, int x_pos)
       Ball_Direction = M_PI - M_PI_4;
       Ball_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
-      Redraw_Ball();
+      Redraw();
       break;
 
    case EBS_Lost:
+      Ball_X_Pos = x_pos - (AsConfig::Ball_Size / 2);
+      Ball_Direction = M_PI - M_PI_4;
+      Ball_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
       break;
 
    case EBS_On_Platform:
       Ball_X_Pos = x_pos - (AsConfig::Ball_Size / 2);
-      Ball_Direction = M_PI - M_PI_4;
+      Ball_Direction = 0;
       Ball_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
-      Redraw_Ball();
+      Redraw();
       break;
    }
 
    Ball_State = new_state;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void ABall::Redraw_Ball()
+void ABall::Redraw()
 {
    Ball_Rect.left = (int)(Ball_X_Pos * AsConfig::Global_Scale);
    Ball_Rect.top = (int)(Ball_Y_Pos * AsConfig::Global_Scale);
