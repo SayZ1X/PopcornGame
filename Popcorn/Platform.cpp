@@ -4,11 +4,24 @@
 //-------------------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
    : X_Pos(AsConfig::Border_X_Offset), Width(Normal_Width), X_Step(AsConfig::Global_Scale * 2), Inner_Width(Normal_Platform_Inner_Widht),
-   Rolling_Step(0), Platform_State(EPS_Normal), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), Platform_Inner_Pen(0),
+   Rolling_Step(0), Meltdown_Platform_Y_Pos{}, Platform_State(EPS_Normal), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), Platform_Inner_Pen(0),
    Platform_Circle_Brush(0), Platform_Inner_Brush(0)
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
 };
+//-------------------------------------------------------------------------------------------------------------------------
+bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+{//Коректируем позицию при отражении от платформы
+   if (next_y_pos + ball->Radius > AsConfig::Platform_Y_Pos)
+   {
+      if (next_x_pos >= X_Pos && next_x_pos <= (double)(X_Pos + Width))
+      {
+         ball->Ball_Direction = M_PI + (M_PI - ball->Ball_Direction);
+         return true;
+      }
+   }
+   return false;
+}
 //-------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Init()
 {// Инициализация компонентов для создания платформы

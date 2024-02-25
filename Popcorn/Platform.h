@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Config.h"
+#include "Ball.h"
 
 enum EPlatform_State
 {
@@ -14,10 +14,12 @@ enum EPlatform_State
 
 //AsPlatform
 //------------------------------------------------------------------------------------------------------------
-class AsPlatform
+class AsPlatform: public AHit_Checker
 {
 public:
 	AsPlatform();
+
+	virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall* ball);
 
 	void Init();
 	void Act();

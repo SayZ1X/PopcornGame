@@ -1,17 +1,21 @@
 ﻿#include "Ball.h"
+
 //ABall
 const double ABall::Start_Ball_Y_Pos = 181.0;
+const double ABall::Radius = 2.0;
+int ABall::Hit_Checkers_Count = 0;
+AHit_Checker *ABall::Hit_Checkers[] = {};
+
 //-------------------------------------------------------------------------------------------------------------------------
 ABall::ABall()
-: Ball_State(EBS_Normal), Ball_Direction(0), Ball_X_Pos(0.0), Ball_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0.0), Ball_Pen(0), Ball_Brush(0), Ball_Rect{}, Prev_Ball_Rect{}
+: Ball_State(EBS_Normal), Ball_Direction(0), Center_X_Pos(0.0), Center_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0.0), Rest_Distance(0.0), Ball_Pen(0), Ball_Brush(0), Ball_Rect{}, Prev_Ball_Rect{}
 {
    Set_State(EBS_Normal,0);
 };
 //-------------------------------------------------------------------------------------------------------------------------
 void ABall::Init()
 { // Инициализация компонентов для создания мячика
-   AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
-}
+   AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);}
 //-------------------------------------------------------------------------------------------------------------------------
 void ABall::Draw(HDC hdc, RECT& paint_area)
 {// Рисуем мячик
@@ -36,82 +40,58 @@ void ABall::Draw(HDC hdc, RECT& paint_area)
    }
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void ABall::Move(ALevel* level, int platform_x_pos, int platform_width)
+void ABall::Move()
 { // Двигаем мячик
+   int i;
    double next_x_pos, next_y_pos;
-   int max_x_pos = AsConfig::Max_X_Pos - AsConfig::Ball_Size;
-   int max_y_pos = AsConfig::Max_Y_Pos - AsConfig::Ball_Size;
    int platform_y_pos = AsConfig::Platform_Y_Pos - AsConfig::Ball_Size;
+   double step_size = 1.0 / AsConfig::Global_Scale;
+   bool got_hit;
 
    if(Ball_State != EBS_Normal)
       return;
 
    Prev_Ball_Rect = Ball_Rect;
+   Rest_Distance += Ball_Speed;
 
-   next_x_pos = Ball_X_Pos + Ball_Speed * cos(Ball_Direction);
-   next_y_pos = Ball_Y_Pos - Ball_Speed * sin(Ball_Direction);
+   while(Rest_Distance >= step_size)
+   {
+      got_hit = false;
 
-   if (next_x_pos < AsConfig::Border_X_Offset)
-   {
-      next_x_pos = AsConfig::Border_X_Offset - (next_x_pos - AsConfig::Border_X_Offset);
-      Ball_Direction = M_PI - Ball_Direction;
-   }
-   if (next_y_pos < AsConfig::Border_Y_Offset)
-   {
-      next_y_pos = AsConfig::Border_Y_Offset - (next_y_pos - AsConfig::Border_Y_Offset);
-      Ball_Direction = M_PI - (Ball_Direction + M_PI);
-   }
-   if (next_x_pos > max_x_pos)
-   {
-      next_x_pos = max_x_pos - (next_x_pos - max_x_pos);
-      Ball_Direction = M_PI - Ball_Direction;
-   }
-   if (next_y_pos > max_y_pos)
-   {
-      if(level->Has_Floor)
-      {
-         next_y_pos = max_y_pos - (next_y_pos - max_y_pos);
-         Ball_Direction = -Ball_Direction;
-      }
-      else
-      {
-         if (next_y_pos > max_y_pos + AsConfig::Ball_Size * 2)
-         Ball_State = EBS_Lost;
+      next_x_pos = Center_X_Pos + step_size * cos(Ball_Direction);
+      next_y_pos = Center_Y_Pos - step_size * sin(Ball_Direction);
+
+      // Корректируем позицию при отражении:
+      for(i = 0; i < Hit_Checkers_Count; i++)
+         got_hit |= Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this);
+
+      if(!got_hit)
+      {//Мячик продолжыт движение, если не отразиться от чего то
+         Rest_Distance -= step_size;
+
+         Center_X_Pos = next_x_pos;
+         Center_Y_Pos = next_y_pos;
       }
    }
-
-   if (next_y_pos > platform_y_pos)
-   {
-      if (next_x_pos >= platform_x_pos && next_x_pos <= platform_x_pos + platform_width)
-      {
-         next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
-         Ball_Direction = M_PI - (Ball_Direction + M_PI);
-      }
-   }
-
-   // Корректируем позицию при отражении от кирпичей
-   level->Check_Level_Brick_Hit(next_y_pos, Ball_Direction);
-
-   Ball_X_Pos = next_x_pos;
-   Ball_Y_Pos = next_y_pos;
 
    Redraw_Ball();
 }
 //-------------------------------------------------------------------------------------------------------------------------
 EBall_State ABall::Get_State()
-{
+{// Установка состояния мячика
    return Ball_State;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void ABall::Set_State(EBall_State new_state, int x_pos)
-{
+void ABall::Set_State(EBall_State new_state, double x_pos)
+{// заполняем ячейку масива с адресамы обьектов у которых есть метод Hit_Checker
    switch(new_state)
    {
    case EBS_Normal:
-      Ball_X_Pos = x_pos - (AsConfig::Ball_Size / 2);
+      Center_X_Pos = x_pos;
       Ball_Direction = M_PI - M_PI_4;
-      Ball_Y_Pos = Start_Ball_Y_Pos;
+      Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
+      Rest_Distance = 0.0;
       Redraw_Ball();
       break;
 
@@ -120,10 +100,11 @@ void ABall::Set_State(EBall_State new_state, int x_pos)
       break;
 
    case EBS_On_Platform:
-      Ball_X_Pos = x_pos - (AsConfig::Ball_Size / 2);
+      Center_X_Pos = x_pos;
       Ball_Direction = M_PI - M_PI_4;
-      Ball_Y_Pos = Start_Ball_Y_Pos;
+      Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
+      Rest_Distance = 0.0;
       Redraw_Ball();
       break;
    }
@@ -131,12 +112,20 @@ void ABall::Set_State(EBall_State new_state, int x_pos)
    Ball_State = new_state;
 }
 //-------------------------------------------------------------------------------------------------------------------------
+void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
+{// заполняем ячейку масива с адресамы обьектов у которых есть метод Hit_Checker
+   if( Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]) )
+      return;
+
+      Hit_Checkers[Hit_Checkers_Count++] = hit_checker;
+}
+//-------------------------------------------------------------------------------------------------------------------------
 void ABall::Redraw_Ball()
-{
-   Ball_Rect.left = (int)(Ball_X_Pos * AsConfig::Global_Scale);
-   Ball_Rect.top = (int)(Ball_Y_Pos * AsConfig::Global_Scale);
-   Ball_Rect.right = Ball_Rect.left + AsConfig::Ball_Size * AsConfig::Global_Scale;
-   Ball_Rect.bottom = Ball_Rect.top + AsConfig::Ball_Size * AsConfig::Global_Scale;
+{// Перерисовываем мячик
+   Ball_Rect.left = (int)((Center_X_Pos - Radius) * AsConfig::Global_Scale);
+   Ball_Rect.top = (int)((Center_Y_Pos - Radius) * AsConfig::Global_Scale);
+   Ball_Rect.right = (int)((Center_X_Pos + Radius) * AsConfig::Global_Scale);
+   Ball_Rect.bottom = (int)((Center_Y_Pos + Radius) * AsConfig::Global_Scale);
 
    InvalidateRect(AsConfig::Hwnd, &Prev_Ball_Rect, FALSE);
    InvalidateRect(AsConfig::Hwnd, &Ball_Rect, FALSE);

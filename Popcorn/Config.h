@@ -32,6 +32,8 @@ public:
 	static const AColor BG_Color, Red_Brick_Color, Green_Brick_Color;
 
 	static int Current_Timer_Tick;
+	static bool Level_Has_Floor;
+
 	static HPEN BG_Pen;
 	static HBRUSH BG_Brush;
 	static HWND Hwnd;

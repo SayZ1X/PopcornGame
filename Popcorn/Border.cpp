@@ -7,6 +7,46 @@ AsBorder::AsBorder()
 {
 }
 //-------------------------------------------------------------------------------------------------------------------------
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+{
+   bool got_hit = false;
+
+   if (next_x_pos - ball->Radius < AsConfig::Border_X_Offset)
+   {
+      //next_x_pos = AsConfig::Border_X_Offset - (next_x_pos - AsConfig::Border_X_Offset);
+      got_hit = true;
+      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+   }
+   if (next_y_pos - ball->Radius < AsConfig::Border_Y_Offset)
+   {
+      //next_y_pos = AsConfig::Border_Y_Offset - (next_y_pos - AsConfig::Border_Y_Offset);
+      got_hit = true;
+      ball->Ball_Direction = M_PI - (ball->Ball_Direction + M_PI);
+   }
+   if (next_x_pos + ball->Radius > AsConfig::Max_X_Pos)
+   {
+      //next_x_pos = AsConfig::Max_X_Pos - (next_x_pos - AsConfig::Max_X_Pos);
+      got_hit = true;
+      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+   }
+   if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos)
+   {
+      if (AsConfig::Level_Has_Floor)
+      {
+         //next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
+         got_hit = true;
+         ball->Ball_Direction = -ball->Ball_Direction;
+      }
+      else
+      {
+         if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4.0)
+            ball->Set_State(EBS_Lost, next_y_pos);
+      }
+   }
+
+   return got_hit;
+}
+//-------------------------------------------------------------------------------------------------------------------------
 void AsBorder::Init()
 {// Инициализация компонентов для создания рамки уровня
    AsConfig::Create_Pen_Brush(69, 238, 255, Border_Blue_Pen, Border_Blue_Brush);
