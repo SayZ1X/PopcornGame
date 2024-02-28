@@ -12,14 +12,35 @@ AsPlatform::AsPlatform()
 //-------------------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 {//Коректируем позицию при отражении от платформы
-   if (next_y_pos + ball->Radius > AsConfig::Platform_Y_Pos)
-   {
-      if (next_x_pos >= X_Pos && next_x_pos <= (double)(X_Pos + Width))
+   double inner_top_y, inner_low_y;
+   double inner_left_x, inner_right_x;
+   double returned_value;
+
+   if (next_y_pos < AsConfig::Platform_Y_Pos)
+      return false;
+
+   inner_top_y = (double)(AsConfig::Platform_Y_Pos + 1);
+   inner_low_y = (double)(AsConfig::Platform_Y_Pos + Height - 1);
+   inner_left_x = (double)(X_Pos + Circle_Size - 1);
+   inner_right_x = (double)(X_Pos + Width - (Circle_Size - 1) );
+
+   if (ball->Is_Moving_Up() )
+   {// Отражаем от нижней грани
+      if (Hit_Circle_On_Line(next_y_pos - inner_low_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, returned_value) )
       {
          ball->Reflect(true);
          return true;
       }
    }
+   else
+   {// Отражаем от верхней грани
+      if (Hit_Circle_On_Line(next_y_pos - inner_top_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, returned_value) )
+      {
+         ball->Reflect(true);
+         return true;
+      }
+   }
+
    return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
