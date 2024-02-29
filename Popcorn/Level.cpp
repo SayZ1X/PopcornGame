@@ -110,7 +110,6 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
 //-------------------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall* ball, double& reflection_pos)
 {// Проверяем попадание мячика по горизонтали
-   double direction = ball->Get_Direction();
 
    if (!ball->Is_Moving_Left() )
    {// Проверяем попадание в левую грань

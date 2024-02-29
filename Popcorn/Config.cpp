@@ -22,6 +22,8 @@ const AColor AsConfig::Green_Brick_Color(0, 240, 181);
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
 HWND AsConfig::Hwnd;
+
+const double AsConfig::Moving_Step_Size = 1.0 / AsConfig::Global_Scale;
 //-------------------------------------------------------------------------------------------------------------------------
 void AsConfig::Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN& pen, HBRUSH& brush)
 {// Создания пары кисти и карандаша для определённого цвета

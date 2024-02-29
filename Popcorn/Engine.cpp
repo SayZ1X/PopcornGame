@@ -25,6 +25,7 @@ void AsEngine::Init_Engine(HWND hwnd)
    Level.Set_Current_Level(ALevel::Level_01);
 
    Ball.Set_State(EBS_Normal, Platform.X_Pos + (Platform.Width / 2));
+
    Platform.Set_State(EPS_Normal);
 
    Platform.Redraw_Platform();
