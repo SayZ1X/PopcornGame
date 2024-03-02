@@ -6,8 +6,17 @@
 enum EBrick_Type
 {
 	EBT_None,
+
 	EBT_Red,
-	EBT_Green
+	EBT_Green,
+	EBT_Unbreakable,
+	EBT_Multihit_1,
+	EBT_Multihit_2,
+	EBT_Multihit_3,
+	EBT_Multihit_4,
+	EBT_Parachute,
+	EBT_Teleport,
+	EBT_Ad,
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -16,9 +25,10 @@ enum EBrick_Type
 class AActive_Brick
 {
 public:
-	AActive_Brick(EBrick_Type brick_type);
+	AActive_Brick(EBrick_Type brick_type, int level_x, int level_y);
 	void Draw(HDC hdc, RECT& paint_area);
 	void Act();
+	bool Is_Finished();
 	
 	static void Setup_Colors();
 	static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step);

@@ -37,11 +37,10 @@ char ALevel::Test_Level[AsConfig::Level_Height][AsConfig::Level_Width] =
 };
 
 
-
 //ALevel
 //-------------------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-:Letter_Pen(0), Brick_Red_Pen(0), Brick_Green_Pen(0), Brick_Red_Brush(0), Brick_Green_Brush(0), Level_Rect{}
+   : Letter_Pen(0), Brick_Red_Pen(0), Brick_Green_Pen(0), Brick_Red_Brush(0), Brick_Green_Brush(0), Level_Rect{}, Active_Bricks_Count(0)
 {
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -58,6 +57,7 @@ void ALevel::Init()
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 
    memset(Current_Level, 0, sizeof(Current_Level) );
+   memset(Active_Bricks, 0, sizeof(Active_Bricks) );
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width])
@@ -67,6 +67,7 @@ void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Leve
 //-------------------------------------------------------------------------------------------------------------------------
 void ALevel::Draw(HDC hdc, RECT& paint_area)
 {// Вывод всех керпичей уровня
+   int i;
    RECT intersection_rect;
 
    if (!IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
@@ -76,7 +77,67 @@ void ALevel::Draw(HDC hdc, RECT& paint_area)
       for (int j = 0; j < AsConfig::Level_Width; j++)
          Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Current_Level[i][j]);
 
-   //Active_Brick.Draw(hdc, paint_area);
+   for(i = 0; i < Active_Bricks_Count; i++)
+   {
+      if(Active_Bricks[i] != 0)
+         Active_Bricks[i]->Draw(hdc, paint_area);
+   }
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void ALevel::Act()
+{// смена состояния кирпича на активный у всех активных кирпичей, которые у нас есть
+   int i;
+
+   for (i = 0; i < Active_Bricks_Count; i++)
+   {
+      if (Active_Bricks[i] != 0)
+      {
+         Active_Bricks[i]->Act();
+
+         if(Active_Bricks[i]->Is_Finished() )
+         {
+            delete Active_Bricks[i];
+            Active_Bricks[i] = 0;
+         }
+      }
+   }
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void ALevel::Add_Active_Brick(int brick_x, int brick_y)
+{// Добавление активного кирпича в который ударил мячик в масив для активных кирпичей
+   int i;
+   EBrick_Type brick_type;
+   AActive_Brick* active_brick;
+
+   if(Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
+      return; // Активных кирпичей слишком много!
+
+   brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
+
+   switch (brick_type)
+   {
+   case EBT_None:
+      return;
+
+   case EBT_Red:
+   case EBT_Green:
+      active_brick = new AActive_Brick(brick_type, brick_x, brick_y);
+      break;
+
+   default:
+      return;
+   }
+
+   // Добавляем новый активный кирпич на первое свободное место   
+   for (i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+   {
+      if (Active_Bricks[i] == 0)
+      {
+         Active_Bricks[i] = active_brick;
+         ++Active_Bricks_Count;
+         break;
+      }
+   }
 }
 //-------------------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall* ball, double &reflection_pos)
@@ -186,16 +247,22 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
             else
                ball->Reflect(false);
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            Add_Active_Brick(j, i);
+
+
             return true;
          }
          else if(got_horizontal_hit)
          {
             ball->Reflect(false);
+            Add_Active_Brick(j, i);
             return true;
          }
          else if(got_vertical_hit)
          {
             ball->Reflect(true);
+            Add_Active_Brick(j, i);
             return true;
          }
       }
@@ -349,3 +416,4 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
    }
 }
 //-------------------------------------------------------------------------------------------------------------------------
+
