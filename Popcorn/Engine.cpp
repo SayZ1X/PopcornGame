@@ -11,7 +11,9 @@ void AsEngine::Init_Engine(HWND hwnd)
 {// Настройка игры при старте
    AsConfig::Hwnd = hwnd;
 
+   AsConfig::Setup_Color();
    AActive_Brick::Setup_Colors();
+
 
    Border.Init();
    Level.Init();
@@ -35,6 +37,7 @@ void AsEngine::Init_Engine(HWND hwnd)
 //-------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
 {// Отрисовка экрана игры
+   SetGraphicsMode(hdc, GM_ADVANCED);
 
    Level.Draw(hdc, paint_area);
 

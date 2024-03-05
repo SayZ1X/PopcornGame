@@ -19,6 +19,9 @@ const AColor AsConfig::BG_Color(9, 25, 43);
 const AColor AsConfig::Red_Brick_Color(209, 51, 88);
 const AColor AsConfig::Green_Brick_Color(0, 240, 181);
 
+HPEN AsConfig::Letter_Pen, AsConfig::Brick_Red_Pen, AsConfig::Brick_Green_Pen;
+HBRUSH AsConfig::Brick_Red_Brush, AsConfig::Brick_Green_Brush;
+
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
 HWND AsConfig::Hwnd;
@@ -39,6 +42,10 @@ void AsConfig::Create_Pen_Brush(const AColor &color, HPEN& pen, HBRUSH& brush)
 //-------------------------------------------------------------------------------------------------------------------------
 void AsConfig::Setup_Color()
 {// Установка цвета фона
+   Letter_Pen = CreatePen(PS_SOLID, AsConfig::Global_Scale, RGB(255, 255, 255));
+
+   Create_Pen_Brush(Red_Brick_Color,Brick_Red_Pen,Brick_Red_Brush);
+   Create_Pen_Brush(Green_Brick_Color, Brick_Green_Pen,Brick_Green_Brush);
    Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);
 }
 //-------------------------------------------------------------------------------------------------------------------------

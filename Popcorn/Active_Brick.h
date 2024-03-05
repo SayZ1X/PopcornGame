@@ -26,8 +26,9 @@ class AActive_Brick
 {
 public:
 	AActive_Brick(EBrick_Type brick_type, int level_x, int level_y);
-	void Draw(HDC hdc, RECT& paint_area);
+	
 	void Act();
+	void Draw(HDC hdc, RECT& paint_area);
 	bool Is_Finished();
 	
 	static void Setup_Colors();

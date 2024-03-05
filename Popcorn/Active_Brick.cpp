@@ -16,6 +16,15 @@ AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
    Brick_Rect.bottom = Brick_Rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 }
 //-------------------------------------------------------------------------------------------------------------------------
+void AActive_Brick::Act()
+{// Установка активного кирпича
+   if (Fade_Step < Max_Fade_Step - 1)
+   {
+      ++Fade_Step;
+      InvalidateRect(AsConfig::Hwnd, &Brick_Rect, FALSE);
+   }
+}
+//-------------------------------------------------------------------------------------------------------------------------
 void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
 {// Отрисовка карпича
    switch(Brick_Type)
@@ -32,15 +41,6 @@ void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
    }
 
    RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right, Brick_Rect.bottom, 2 * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale);
-}
-//-------------------------------------------------------------------------------------------------------------------------
-void AActive_Brick::Act()
-{// Установка активного кирпича
-   if (Fade_Step < Max_Fade_Step - 1)
-   {
-      ++Fade_Step;
-      InvalidateRect(AsConfig::Hwnd, &Brick_Rect, FALSE);
-   }
 }
 //-------------------------------------------------------------------------------------------------------------------------
 bool AActive_Brick::Is_Finished()

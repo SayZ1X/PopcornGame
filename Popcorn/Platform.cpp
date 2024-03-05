@@ -160,7 +160,7 @@ void AsPlatform::Draw_Circle_Highlight(HDC hdc, int x, int y)
 {// Рисуем блик
    SelectObject(hdc, Highlight_Pen);
 
-   Arc(hdc, x + AsConfig::Global_Scale, y + AsConfig::Global_Scale, x + (Circle_Size - 1) * AsConfig::Global_Scale, y + (Circle_Size - 1) * AsConfig::Global_Scale,
+   Arc(hdc, x + AsConfig::Global_Scale, y + AsConfig::Global_Scale, x + (Circle_Size - 1) * AsConfig::Global_Scale - 1, y + (Circle_Size - 1) * AsConfig::Global_Scale - 1,
       x + 2 * AsConfig::Global_Scale, y + AsConfig::Global_Scale, x + AsConfig::Global_Scale, y + 3 * AsConfig::Global_Scale);
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -176,8 +176,8 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
    SelectObject(hdc, Platform_Circle_Pen);
    SelectObject(hdc, Platform_Circle_Brush);
 
-   Ellipse(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size) * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
-   Ellipse(hdc, (x + Inner_Width) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size + Inner_Width) * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
+   Ellipse(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size) * AsConfig::Global_Scale - 1, (y + Circle_Size) * AsConfig::Global_Scale - 1);
+   Ellipse(hdc, (x + Inner_Width) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size + Inner_Width) * AsConfig::Global_Scale - 1, (y + Circle_Size) * AsConfig::Global_Scale - 1);
 
    // 3. Рисуем блик
    Draw_Circle_Highlight(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale);
@@ -186,7 +186,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT& paint_area)
    SelectObject(hdc, Platform_Inner_Pen);
    SelectObject(hdc, Platform_Inner_Brush);
 
-   RoundRect(hdc, (x + 4) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4 + Inner_Width - 1) * AsConfig::Global_Scale, (y + 1 + 5) * AsConfig::Global_Scale,
+   RoundRect(hdc, (x + 4) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4 + Inner_Width - 1) * AsConfig::Global_Scale - 1, (y + 1 + 5) * AsConfig::Global_Scale - 1,
       3 * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale);
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT& paint_area)
 
    for(i = 0; i < area_width; i++)
    {
-      y_offset = AsConfig::Rand(Meltdown_Speed);
+      y_offset = AsConfig::Rand(Meltdown_Speed) + 1;
       x = Platform_Rect.left + i;
 
       if(Meltdown_Platform_Y_Pos[i] > max_platform_y)
@@ -251,7 +251,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)
    SelectObject(hdc, Platform_Circle_Pen);
    SelectObject(hdc, Platform_Circle_Brush);
 
-   Ellipse(hdc, x , y , x + roller_size, y + roller_size);
+   Ellipse(hdc, x , y , x + roller_size - 1, y + roller_size - 1);
 
    // 3. Раздельная линия
    SetGraphicsMode(hdc, GM_ADVANCED);
@@ -268,7 +268,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT& paint_area)
    SelectObject(hdc, AsConfig::BG_Pen);
    SelectObject(hdc, AsConfig::BG_Brush);
 
-   Rectangle(hdc, - AsConfig::Global_Scale / 2, - roller_size / 2, AsConfig::Global_Scale / 2, roller_size / 2);
+   Rectangle(hdc, - AsConfig::Global_Scale / 2, - roller_size / 2, AsConfig::Global_Scale / 2 - 1, roller_size / 2 - 1);
 
    SetWorldTransform(hdc, &old_xform);
 
