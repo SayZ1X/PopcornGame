@@ -56,26 +56,15 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
 //-------------------------------------------------------------------------------------------------------------------------
 int AsEngine::On_Key_Down(EKey_Type key_type)
 {// Обработка клавиш управления
-   int max_x_pos = AsConfig::Max_X_Pos - Platform.Width + 1;
 
    switch (key_type)
    {
    case EKT_Left:
-      Platform.X_Pos -= Platform.X_Step;
-
-      if (Platform.X_Pos < AsConfig::Border_X_Offset)
-         Platform.X_Pos = AsConfig::Border_X_Offset;
-
-      Platform.Redraw_Platform();
+      Platform.Move(true);
       break;
 
    case EKT_Right:
-      Platform.X_Pos += Platform.X_Step;
-
-      if (Platform.X_Pos > max_x_pos)
-         Platform.X_Pos = max_x_pos;
-
-      Platform.Redraw_Platform();
+      Platform.Move(false);
       break;
 
 
