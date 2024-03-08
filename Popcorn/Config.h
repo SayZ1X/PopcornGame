@@ -62,6 +62,6 @@ public:
 	static const int FPS = 20;
 	static const int Max_Active_Bricks_Count = 10;
 	static const int Max_Falling_Letters_Count = 10;
-	static const int Hits_Per_Letter = 1; //шанс на выпадение буквы = 1.0 / Hit_Per_Letter
+	static const int Hits_Per_Letter = 3; //шанс на выпадение буквы = 1.0 / Hit_Per_Letter
 };
 //-------------------------------------------------------------------------------------------------------------------------

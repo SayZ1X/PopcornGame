@@ -9,6 +9,15 @@ AsEngine::AsEngine()
 //-------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Init_Engine(HWND hwnd)
 {// Настройка игры при старте
+   
+   SYSTEMTIME sys_time;
+   FILETIME file_time;
+
+   GetSystemTime(&sys_time);
+   SystemTimeToFileTime(&sys_time, &file_time);
+
+   srand(file_time.dwLowDateTime);
+
    AsConfig::Hwnd = hwnd;
 
    AsConfig::Setup_Color();
