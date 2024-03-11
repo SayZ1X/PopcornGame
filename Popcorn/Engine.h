@@ -1,17 +1,19 @@
 ﻿#pragma once
 
+#include <Windows.h>
+
 #include "Border.h"
-#include "Ball.h"
 #include "Level.h"
 #include "Platform.h"
 
+//------------------------------------------------------------------------------------------------------------
 enum EKey_Type
 {
 	EKT_Left,
 	EKT_Right,
 	EKT_Space
 };
-
+//------------------------------------------------------------------------------------------------------------
 enum EGame_State
 {
 	EGS_Test_Ball,
@@ -20,10 +22,8 @@ enum EGame_State
 	EGS_Lost_Ball,
 	EGS_Restart_Level
 };
-
+//------------------------------------------------------------------------------------------------------------
 const int Timer_ID = WM_USER + 1;
-
-//AsEngine
 //------------------------------------------------------------------------------------------------------------
 class AsEngine
 {
@@ -36,11 +36,13 @@ public:
 	int On_Timer();
 
 private:
+	void Act();
+	void On_Falling_Letter(AFalling_Letter *falling_letter);
 
 	EGame_State Game_State;
 
 	ABall Ball;
-	ALevel Level;
+	AsLevel Level;
 	AsPlatform Platform;
 	AsBorder Border;
 
